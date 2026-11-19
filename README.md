@@ -24,16 +24,29 @@ docker compose up -d
 
 ## To copy the world backup from the image
 
-1. Create container from image with dummy command
+1. Pull the image
 ```bash
-docker container create <image_id> echo "Hello, Docker!"
+docker image pull <tag>
 ```
 
-2. Copy from container
+2. Create container from image with dummy command
 ```bash
-docker cp <container_id>:/data.tgz С:\local\path.tgz
+docker container create <image_id> echo "Hello"
 ```
 
+docker container create h1v3m1nd/remote-mc-backup:20260713145909 echo "Hello"
+
+3. Copy from container
+```bash
+docker cp <container_id>:/data.tgz old_backup_world.tgz
+```
+
+docker cp 42507f94d1f326f0e42500c7f4cda91306f2ab738c267fd50df333d01dfbf78e:/data.tgz old_backup_world.tgz
+
+4. Untar
+```bash
+tar -xvzf old_backup_world.tgz -C old_backup_folder
+```
 ## Update scoreboard for BlazeandCave's Advancements
 
 ```
@@ -42,7 +55,7 @@ docker cp <container_id>:/data.tgz С:\local\path.tgz
 
 ## File Permissions
 
-When running the container, directory permissions can sometimes block the server from writing data. The [official documentation](https://docker-minecraft-server.readthedocs.io/en/latest/variables/) notes that the server runs under a user with UID=1000 and GUID=1000.
+When running the container, directory permissions can sometimes block the server from writing data. The [itzg's documentation](https://docker-minecraft-server.readthedocs.io/en/latest/variables/) notes that the server runs under a user with UID=1000 and GUID=1000.
 
 Fix permissions:
 
@@ -57,3 +70,37 @@ sudo chmod -R u+rwX "$MC_DATA_PATH" "$MC_BACKUPS_PATH"
 ```bash
 sudo usermod -aG docker $USER
 ```
+
+## Download world from server to you local device
+
+1. Archive
+```bash
+sudo tar -cvzf <path> world
+```
+
+2. Download
+```bash
+scp <name>@<host>:<remote-path> <local-path>
+```
+
+Local MultiMC path on macos to saves:
+`/Applications/MultiMC.app/Data/instances/26.2/.minecraft/saves/`
+
+## Fix broken generation
+
+1. Download ForceBlend for Fabric from https://github.com/Mauro0805/ForceBlend/releases
+2. Install it as a mod
+3. Edit `<game>/config/forceblend.properties`
+```
+run-mode=once
+automatic-processing=true
+automatic-backup=false
+detailed-logging=true
+maximum-chunks-per-run=unlimited
+processing-threads=all
+```
+4. Open singleplayer worlds
+
+The issues was found that some chunks are stored in an old way that ForceBlend does not work with. They do not include xPos and zPos at root level.
+`Edit -> Optimize world` with tick erase cache.
+

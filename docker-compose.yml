@@ -106,7 +106,7 @@ services:
       BACKUP_ON_STARTUP: false
       PAUSE_IF_NO_PLAYERS: true
       LINK_LATEST: true
-      EXCLUDES: bluemap/*,cache,*.tmp,*.jar
+      EXCLUDES: bluemap/*,cache,*.tmp
       SERVER_PORT: "${MC_SERVER_PORT}"
       QUERY_PORT: "${MC_SERVER_PORT}"
       DOCKER_IMAGE: "${HUB_REPO_NAME}:latest"
